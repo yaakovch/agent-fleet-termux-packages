@@ -24,8 +24,11 @@ expected_prefix="/data/data/com.yaakovch.fleet/files/usr"
   exit 1
 }
 
-rm -rf "$repo/agent-fleet-artifacts/$architecture"
-mkdir -p "$repo/agent-fleet-artifacts/$architecture"
+artifact_root="$repo/output/agent-fleet-artifacts/$architecture"
+bootstrap_root="$repo/output/agent-fleet-bootstraps"
+rm -rf "$artifact_root"
+mkdir -p "$artifact_root" "$bootstrap_root"
+export TERMUX_BOOTSTRAP_OUTPUT_DIR="$bootstrap_root"
 
 # build-bootstraps builds every dependency locally when the application ID is
 # custom. The additional roots are the tools not already in its core bootstrap.
@@ -35,6 +38,6 @@ mkdir -p "$repo/agent-fleet-artifacts/$architecture"
 python3 "$repo/scripts/agent-fleet/package-runtime.py" \
   --architecture "$architecture" \
   --release-tag "$release_tag" \
-  --bootstrap "$repo/bootstrap-$architecture.zip" \
+  --bootstrap "$bootstrap_root/bootstrap-$architecture.zip" \
   --packages "$repo/output" \
-  --output "$repo/agent-fleet-artifacts/$architecture"
+  --output "$artifact_root"
