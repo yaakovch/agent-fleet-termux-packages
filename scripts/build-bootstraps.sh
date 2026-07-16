@@ -399,7 +399,10 @@ main() {
 		termux_step_handle_buildarch
 
 		if [[ $FORCE_BUILD_PACKAGES == "1" ]]; then
-			rm -f "$TERMUX_BUILT_PACKAGES_DIRECTORY_FOR_ARCH"/*
+			# This script owns TERMUX_BUILT_PACKAGES_DIRECTORY. The old
+			# *_FOR_ARCH name was never defined, expanded to /*, and made a
+			# forced custom-prefix build try to remove the container root.
+			rm -f "$TERMUX_BUILT_PACKAGES_DIRECTORY"/*
 			rm -f "$TERMUX_BUILT_DEBS_DIRECTORY"/*
 		fi
 
