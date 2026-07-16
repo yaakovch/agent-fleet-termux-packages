@@ -26,8 +26,7 @@ expected_prefix="/data/data/com.yaakovch.fleet/files/usr"
 
 artifact_root="$repo/output/agent-fleet-artifacts/$architecture"
 bootstrap_root="$repo/output/agent-fleet-bootstraps"
-rm -rf "$artifact_root"
-mkdir -p "$artifact_root" "$bootstrap_root"
+rm -rf "$artifact_root" "$bootstrap_root"
 export TERMUX_BOOTSTRAP_OUTPUT_DIR="$bootstrap_root"
 
 # build-bootstraps builds every dependency locally when the application ID is
@@ -35,6 +34,7 @@ export TERMUX_BOOTSTRAP_OUTPUT_DIR="$bootstrap_root"
 "$repo/scripts/build-bootstraps.sh" -f --architectures "$architecture" \
   --add ca-certificates,curl,git,openssh,python
 
+mkdir -p "$artifact_root"
 python3 "$repo/scripts/agent-fleet/package-runtime.py" \
   --architecture "$architecture" \
   --release-tag "$release_tag" \

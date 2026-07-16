@@ -402,8 +402,8 @@ main() {
 			# This script owns TERMUX_BUILT_PACKAGES_DIRECTORY. The old
 			# *_FOR_ARCH name was never defined, expanded to /*, and made a
 			# forced custom-prefix build try to remove the container root.
-			rm -f "$TERMUX_BUILT_PACKAGES_DIRECTORY"/*
-			rm -f "$TERMUX_BUILT_DEBS_DIRECTORY"/*
+			find "$TERMUX_BUILT_PACKAGES_DIRECTORY" -mindepth 1 -maxdepth 1 -type f -delete 2>/dev/null || true
+			find "$TERMUX_BUILT_DEBS_DIRECTORY" -mindepth 1 -maxdepth 1 -type f -delete
 		fi
 
 		BOOTSTRAP_ROOTFS="$BOOTSTRAP_TMPDIR/rootfs-${TERMUX_ARCH}"
