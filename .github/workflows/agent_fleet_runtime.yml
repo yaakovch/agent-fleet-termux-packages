@@ -27,7 +27,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Free build space
-        run: ./scripts/free-space.sh
+        run: |
+          ./scripts/free-space.sh
+          # The pinned image runs as its unprivileged builder user, whose uid is
+          # intentionally independent from GitHub's runner uid.
+          chmod -R a+rwX "$GITHUB_WORKSPACE"
       - name: Build custom-prefix closure and bootstrap
         env:
           CI: "true"
