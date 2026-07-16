@@ -1,0 +1,70 @@
+name: Agent Fleet fixed Android runtime
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Immutable release tag, for example agent-fleet-runtime-c7ca367-1
+        required: true
+        type: string
+
+permissions: {}
+
+concurrency:
+  group: agent-fleet-runtime-${{ inputs.release_tag }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    permissions:
+      contents: read
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      matrix:
+        architecture: [aarch64, x86_64]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Free build space
+        run: ./scripts/free-space.sh
+      - name: Build custom-prefix closure and bootstrap
+        env:
+          CI: "true"
+          TERMUX_BUILDER_IMAGE_NAME: ghcr.io/termux/package-builder@sha256:fa23eb4238ef8eda877cd991a06152ce76e9f274d1cae0d42f28fee3e5cd6016
+        run: >-
+          ./scripts/run-docker.sh
+          ./scripts/agent-fleet/build-runtime.sh
+          ${{ matrix.architecture }}
+          ${{ inputs.release_tag }}
+      - name: Upload immutable inputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-fleet-runtime-${{ matrix.architecture }}
+          path: agent-fleet-artifacts/${{ matrix.architecture }}/agent-fleet-runtime-${{ matrix.architecture }}.*
+          if-no-files-found: error
+          retention-days: 30
+
+  publish:
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: agent-fleet-runtime-*
+          merge-multiple: true
+          path: release
+      - name: Verify and publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          test "$(find release -maxdepth 1 -name '*.zip' -type f | wc -l)" -eq 2
+          test "$(find release -maxdepth 1 -name '*.json' -type f | wc -l)" -eq 2
+          (cd release && sha256sum *.json *.zip > SHA256SUMS)
+          gh release create "$RELEASE_TAG" release/* \
+            --title "Agent Fleet Android runtime $RELEASE_TAG" \
+            --notes "Fixed custom-prefix runtime for com.yaakovch.fleet. Packages are not compatible with official Termux."

@@ -1,0 +1,14 @@
+bash
+ca-certificates
+coreutils
+curl
+findutils
+git
+grep
+gzip
+openssh
+procps
+python
+sed
+tar
+termux-tools
