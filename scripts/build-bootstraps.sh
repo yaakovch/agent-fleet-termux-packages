@@ -491,7 +491,7 @@ main() {
 		extract_debs "$TERMUX_ARCH" || return $?
 
 		# Add termux bootstrap second stage files
-		add_termux_bootstrap_second_stage_files "$package_arch"
+		add_termux_bootstrap_second_stage_files "$TERMUX_ARCH"
 
 		# Create bootstrap archive.
 		create_bootstrap_archive "$TERMUX_ARCH" || return $?
