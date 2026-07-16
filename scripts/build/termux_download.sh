@@ -37,6 +37,7 @@ termux_download() {
 	local TMPFILE
 	local -a CURL_OPTIONS=(
 		--fail               # Consider 4xx and 5xx responses as failures
+		--http1.1            # Avoid flaky HTTP/2 resets from some source mirrors
 		--retry 5            # Retry up to 5 times on transient failures
 		--retry-connrefused  # Also retry on refused connections
 		--retry-delay 5      # Wait 5 seconds between retries

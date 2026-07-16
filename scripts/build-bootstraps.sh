@@ -373,7 +373,9 @@ main() {
 				fi
 				;;
 			-f)
-				BUILD_PACKAGE_OPTIONS+=("-f")
+				# Clear every package marker and output once before the architecture
+				# build. Passing -f to every top-level package recursively rebuilt the
+				# same dependency closure dozens of times.
 				FORCE_BUILD_PACKAGES=1
 				;;
 			*)
@@ -435,7 +437,7 @@ main() {
 
 		# Core utilities.
 		PACKAGES+=("bash") # Used by `termux-bootstrap-second-stage.sh`
-		PACKAGES+=("bzip2")
+		PACKAGES+=("libbz2")
 		if ! ${BOOTSTRAP_ANDROID10_COMPATIBLE}; then
 			PACKAGES+=("command-not-found")
 		else

@@ -59,7 +59,7 @@ export ANDROID_SDK_ROOT="$writable_sdk"
 # build-bootstraps builds every dependency locally when the application ID is
 # custom. The additional roots are the tools not already in its core bootstrap.
 "$repo/scripts/build-bootstraps.sh" -f --architectures "$architecture" \
-  --add ca-certificates,curl,git,openssh,python
+  --add ca-certificates,libcurl,git,openssh,python
 
 mkdir -p "$artifact_root"
 python3 "$repo/scripts/agent-fleet/package-runtime.py" \
