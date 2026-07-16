@@ -6,9 +6,12 @@ This fork builds the fixed internal runtime for the Android application ID
 built for official Termux.
 
 The public release assets are supply-chain inputs, not a user-facing APT
-repository. Agent Fleet does not expose `pkg install` or a general local shell.
-Each release contains an arm64 or x86_64 ZIP with a custom bootstrap, the full
-locally built Debian package closure, a hash lock, and an SPDX SBOM.
+repository. Agent Fleet keeps its local terminal view, with the basic shell,
+SSH, Git, Python, and wtmux client capabilities carried by this fixed bundle.
+Remote `pkg install` sources are intentionally disabled: official Termux
+packages use a different prefix and are incompatible. Each release contains an
+arm64 or x86_64 ZIP with a custom bootstrap, the full locally built Debian
+package closure, a hash lock, and an SPDX SBOM.
 
 To reproduce one architecture inside the pinned Termux builder container:
 
