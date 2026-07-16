@@ -29,6 +29,33 @@ bootstrap_root="$repo/output/agent-fleet-bootstraps"
 rm -rf "$artifact_root" "$bootstrap_root"
 export TERMUX_BOOTSTRAP_OUTPUT_DIR="$bootstrap_root"
 
+# Some bootstrap dependencies (notably termux-am) run their own Android Gradle
+# build. The pinned package-builder image exposes an SDK that is intentionally
+# read-only, so Gradle cannot auto-install its declared platform/build-tools.
+# Install only those pinned components into an isolated writable SDK instead of
+# mutating the builder image or depending on whatever it happens to contain.
+source_sdk="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-}}"
+[[ -n "$source_sdk" && -d "$source_sdk" ]] || {
+  echo "the pinned builder did not expose an Android SDK" >&2
+  exit 1
+}
+sdkmanager="$(find "$source_sdk" -type f -name sdkmanager -print -quit)"
+[[ -x "$sdkmanager" ]] || {
+  echo "the pinned builder Android SDK does not contain sdkmanager" >&2
+  exit 1
+}
+writable_sdk="$HOME/.agent-fleet-android-sdk"
+mkdir -p "$writable_sdk"
+if [[ -d "$source_sdk/licenses" ]]; then
+  rm -rf "$writable_sdk/licenses"
+  cp -a "$source_sdk/licenses" "$writable_sdk/licenses"
+fi
+"$sdkmanager" --sdk_root="$writable_sdk" \
+  "platforms;android-33" \
+  "build-tools;30.0.3"
+export ANDROID_HOME="$writable_sdk"
+export ANDROID_SDK_ROOT="$writable_sdk"
+
 # build-bootstraps builds every dependency locally when the application ID is
 # custom. The additional roots are the tools not already in its core bootstrap.
 "$repo/scripts/build-bootstraps.sh" -f --architectures "$architecture" \
