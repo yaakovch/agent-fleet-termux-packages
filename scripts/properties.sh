@@ -1799,7 +1799,10 @@ TERMUX_PKGS__REPO_URL="$TERMUX__REPOS_HOST_ORG_URL/$TERMUX_PKGS__REPO_NAME"
 #
 # Default value: `Termux`
 ##
-TERMUX_APP__NAME="Agent Fleet"
+# Keep the native build token whitespace-free: several upstream package make
+# recipes pass this value as an unquoted variable assignment. The Android app's
+# user-visible label remains "Agent Fleet".
+TERMUX_APP__NAME="AgentFleet"
 
 
 ##
