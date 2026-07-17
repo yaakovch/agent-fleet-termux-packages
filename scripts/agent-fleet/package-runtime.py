@@ -179,6 +179,8 @@ def main() -> int:
     lock_payload = json_bytes(lock)
     sbom_payload = json_bytes(spdx(lock))
     bootstrap_payload = args.bootstrap.read_bytes()
+    if len(bootstrap_payload) > 128 * 1024 * 1024:
+        raise SystemExit("bootstrap exceeds the Agent Fleet runtime size budget")
     args.output.mkdir(parents=True, exist_ok=True)
     bundle = args.output / bundle_name
     with zipfile.ZipFile(bundle, "w", allowZip64=True) as archive:
@@ -187,6 +189,9 @@ def main() -> int:
         add(archive, args.bootstrap.name, bootstrap_payload)
         for archive_name, path in payloads:
             add(archive, archive_name, path.read_bytes())
+    if bundle.stat().st_size > 256 * 1024 * 1024:
+        bundle.unlink()
+        raise SystemExit("runtime bundle exceeds the Agent Fleet size budget")
 
     descriptor = {
         "schemaVersion": 1,

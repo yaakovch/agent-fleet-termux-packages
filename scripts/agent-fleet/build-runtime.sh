@@ -28,6 +28,7 @@ artifact_root="$repo/output/agent-fleet-artifacts/$architecture"
 bootstrap_root="$repo/output/agent-fleet-bootstraps"
 rm -rf "$artifact_root" "$bootstrap_root"
 export TERMUX_BOOTSTRAP_OUTPUT_DIR="$bootstrap_root"
+export TERMUX_BOOTSTRAP_RUNTIME_ROOTS_FILE="$repo/agent-fleet/runtime-roots.txt"
 
 # Some bootstrap dependencies (notably termux-am) run their own Android Gradle
 # build. The pinned package-builder image exposes an SDK that is intentionally

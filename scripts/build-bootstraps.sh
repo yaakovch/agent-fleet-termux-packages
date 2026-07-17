@@ -487,6 +487,17 @@ main() {
 			set -e
 		done
 
+		# A source build leaves build-only dependencies in output. Forked
+		# bootstraps must retain only Essential packages plus the requested
+		# install-time roots and their recursive Debian dependencies.
+		if [[ -n "${TERMUX_BOOTSTRAP_RUNTIME_ROOTS_FILE:-}" ]]; then
+			python3 "$TERMUX_PACKAGES_DIRECTORY/scripts/agent-fleet/select-runtime-debs.py" \
+				--architecture "$TERMUX_ARCH" \
+				--packages "$TERMUX_BUILT_DEBS_DIRECTORY" \
+				--roots "$TERMUX_BOOTSTRAP_RUNTIME_ROOTS_FILE" \
+				--prune || return $?
+		fi
+
 		# Extract all debs.
 		extract_debs "$TERMUX_ARCH" || return $?
 

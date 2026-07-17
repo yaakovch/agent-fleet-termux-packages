@@ -10,8 +10,10 @@ repository. Agent Fleet keeps its local terminal view, with the basic shell,
 SSH, Git, Python, and wtmux client capabilities carried by this fixed bundle.
 Remote `pkg install` sources are intentionally disabled: official Termux
 packages use a different prefix and are incompatible. Each release contains an
-arm64 or x86_64 ZIP with a custom bootstrap, the full locally built Debian
-package closure, a hash lock, and an SPDX SBOM.
+arm64 or x86_64 ZIP with a custom bootstrap, the install-time Debian package
+closure, a hash lock, and an SPDX SBOM. Source-only build dependencies are
+pruned before bootstrap assembly: only Essential packages, the declared runtime
+roots, and their recursive dependencies are retained.
 
 To reproduce one architecture inside the pinned Termux builder container:
 
